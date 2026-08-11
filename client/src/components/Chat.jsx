@@ -5,6 +5,7 @@ import Message from "./Message";
 
 const Chat = ({ username }) => {
   const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [text, setText] = useState("");
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [typingUser, setTypingUser] = useState("");
@@ -19,6 +20,8 @@ const Chat = ({ username }) => {
         setMessages(data);
       } catch (error) {
         console.error("Failed to load messages:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -121,7 +124,12 @@ const Chat = ({ username }) => {
       </header>
 
       <main className="messages-container">
-        {messages.length === 0 ? (
+        {loading ? (
+          <div className="chat-loading">
+            <div className="spinner"></div>
+            <p>Loading messages...</p>
+          </div>
+        ) : messages.length === 0 ? (
           <div className="empty-chat">
             <p>No messages yet.</p>
             <span>Start the conversation!</span>
@@ -136,7 +144,7 @@ const Chat = ({ username }) => {
           ))
         )}
 
-        {typingUser && typingUser !== username && (
+        {!loading && typingUser && typingUser !== username && (
           <div className="typing-indicator">{typingUser} is typing...</div>
         )}
 
